@@ -33,13 +33,17 @@ type Response struct {
 ### Available command line options:
 ```
 Usage of ./scrape:
- -domain-regex string(optional)
+  -domain-regex string
         Domain regex to limit crawls to. Defaults to base url domain
- -max-depth int(optional)
+  -help
+        Show Options
+  -max-depth int
         Max depth to Crawl (default -1)
- -sitemap string(optional)
+  -minion-count int
+        Count of parallel minions running. If -1, is count of cpu * 2 (default -1)
+  -sitemap string
         File location to write sitemap to
- -url string(required)
+  -url string
         Starting URL (default "https://vedhavyas.com")
 ```
 
@@ -56,25 +60,25 @@ At this point, the following are the available APIs.
 
 #### Start
 ```go
-func Start(ctx context.Context, url string) (resp *Response, err error)
+func Start(ctx context.Context, url string, minionCount int) (resp *Response, err error)
 ```
 Start will start the scrapping with no depth limit(-1) and base url domain
 
 #### StartWithDepth
 ```go
-func StartWithDepth(ctx context.Context, url string, maxDepth int) (resp *Response, err error)
+func StartWithDepth(ctx context.Context, url string, maxDepth int, minionCount int) (resp *Response, err error)
 ```
 StartWithDepth will start the scrapping with given max depth and base url domain
 
 #### StartWithDepthAndDomainRegex
 ```go
-func StartWithDepthAndDomainRegex(ctx context.Context, url string, maxDepth int, domainRegex string) (resp *Response, err error) 
+func StartWithDepthAndDomainRegex(ctx context.Context, url string, maxDepth int, domainRegex string, minionCount int) (resp *Response, err error) 
 ```
 StartWithDepthAndDomainRegex will start the scrapping with max depth and regex
 
 #### StartWithRegex
 ```go
-func StartWithDomainRegex(ctx context.Context, url, domainRegex string) (resp *Response, err error)
+func StartWithDomainRegex(ctx context.Context, url, domainRegex string, minionCount int) (resp *Response, err error)
 ```
 StartWithRegex will start the scrapping with no depth limit(-1) and regex
 

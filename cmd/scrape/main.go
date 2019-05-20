@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/vedhavyas/scrape"
+	"github.com/jidckii/scrape"
 )
 
 func main() {
@@ -18,6 +18,7 @@ func main() {
 	maxDepth := flag.Int("max-depth", -1, "Max depth to Crawl")
 	domainRegex := flag.String("domain-regex", "", "Domain regex to limit crawls to. Defaults to base url domain")
 	sitemapFile := flag.String("sitemap", "", "File location to write sitemap to")
+	minionCount := flag.Int("minion-count", -1, "Count of parallel minions running. If -1, is count of cpu * 2")
 	help := flag.Bool("help", false, "Show Options")
 	flag.Parse()
 
@@ -34,7 +35,7 @@ func main() {
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	defer cancelFunc()
 
-	resp, err := scrape.StartWithDepthAndDomainRegex(ctx, *baseURL, *maxDepth, *domainRegex)
+	resp, err := scrape.StartWithDepthAndDomainRegex(ctx, *baseURL, *maxDepth, *domainRegex, *minionCount)
 	if err != nil {
 		log.Fatalf("couldn't start scrape: %v\n", err)
 	}

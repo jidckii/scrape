@@ -105,7 +105,7 @@ func gruToResponse(g *gru) *Response {
 }
 
 // start will start the scrapping
-func start(ctx context.Context, u string, maxDepth int, regex string) (resp *Response, err error) {
+func start(ctx context.Context, u string, maxDepth int, regex string, minionCount int) (resp *Response, err error) {
 	baseURL, err := url.Parse(u)
 	if err != nil {
 		return nil, fmt.Errorf("failed to scrape url: %v\n", err)
@@ -117,11 +117,13 @@ func start(ctx context.Context, u string, maxDepth int, regex string) (resp *Res
 	}
 
 	var minions []*minion
-	for i := 0; i < runtime.NumCPU()*2; i++ {
+	if minionCount == -1 {
+		minionCount = runtime.NumCPU() * 2
+	}
+	for i := 0; i < minionCount; i++ {
 		m := newMinion(fmt.Sprintf("Minion %d", i), g.submitDumpCh)
 		minions = append(minions, m)
 		go startMinion(ctx, m)
-
 	}
 
 	g.minions = minions
@@ -130,23 +132,23 @@ func start(ctx context.Context, u string, maxDepth int, regex string) (resp *Res
 }
 
 // StartWithDepth will start the scrapping with given max depth and base url domain
-func StartWithDepth(ctx context.Context, url string, maxDepth int) (resp *Response, err error) {
-	return start(ctx, url, maxDepth, "")
+func StartWithDepth(ctx context.Context, url string, maxDepth int, minionCount int) (resp *Response, err error) {
+	return start(ctx, url, maxDepth, "", minionCount)
 }
 
 // StartWithDepthAndDomainRegex will start the scrapping with max depth and regex
-func StartWithDepthAndDomainRegex(ctx context.Context, url string, maxDepth int, domainRegex string) (resp *Response, err error) {
-	return start(ctx, url, maxDepth, domainRegex)
+func StartWithDepthAndDomainRegex(ctx context.Context, url string, maxDepth int, domainRegex string, minionCount int) (resp *Response, err error) {
+	return start(ctx, url, maxDepth, domainRegex, minionCount)
 }
 
 // StartWithDomainRegex will start the scrapping with no depth limit(-1) and regex
-func StartWithDomainRegex(ctx context.Context, url, domainRegex string) (resp *Response, err error) {
-	return start(ctx, url, -1, domainRegex)
+func StartWithDomainRegex(ctx context.Context, url, domainRegex string, minionCount int) (resp *Response, err error) {
+	return start(ctx, url, -1, domainRegex, minionCount)
 }
 
 // Start will start the scrapping with no depth limit(-1) and base url domain
-func Start(ctx context.Context, url string) (resp *Response, err error) {
-	return start(ctx, url, -1, "")
+func Start(ctx context.Context, url string, minionCount int) (resp *Response, err error) {
+	return start(ctx, url, -1, "", minionCount)
 }
 
 // Sitemap generates a sitemap from the given response
